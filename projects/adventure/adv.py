@@ -1,7 +1,7 @@
 from room import Room
 from player import Player
 from world import World
-
+from util import Queue
 import random
 from ast import literal_eval
 
@@ -29,6 +29,28 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+backtrack = []
+reversed_directions = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+visited = set()
+
+while len(visited) < len(room_graph):
+    next_move = None
+    for exit in player.current_room.get_exits():
+        if player.current_room.get_room_in_direction(exit) not in visited:
+            next_move = exit
+            break
+
+    if next_move is not None:
+        traversal_path.append(next_move)
+        backtrack.append(reversed_directions[next_move])
+        player.travel(next_move)  
+        visited.add(player.current_room)
+
+    else:
+        next_move = backtrack.pop()
+        traversal_path.append(next_move)
+        player.travel(next_move)
 
 
 # TRAVERSAL TEST
@@ -51,12 +73,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
